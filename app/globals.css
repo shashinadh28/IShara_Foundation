@@ -11,6 +11,10 @@
   --font-sans: var(--font-plus-jakarta);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 /* Ensure body matches hero so no white flash above the dark-green section */
 body {
   background: #1A3A1A;
