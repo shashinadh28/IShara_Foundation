@@ -12,6 +12,7 @@ const G = {
 };
 
 const navLinks = [
+  { label: "Home",             href: "#hero" },
   { label: "About",            href: "#about-ishara" },
   { label: "What We Support",  href: "#focus-areas" },
   { label: "Our Contribution", href: "#contribution" },
@@ -196,9 +197,6 @@ export default function Navbar() {
 
         </div>
       </motion.header>
-
-      {/* Spacer — accounts for fixed floating navbar height + top-4 gap */}
-      <div className="h-[72px]" />
     </>
   );
 }

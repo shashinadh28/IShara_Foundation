@@ -100,6 +100,7 @@ function SectionLabel({ children, dark = false }: { children: React.ReactNode; d
 
 /* ═══════════════════════════════════════════════════════════════════ */
 export default function CSRClient() {
+  const [hoveredValue, setHoveredValue] = useState<number | null>(null);
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const bgY   = useTransform(scrollYProgress, [0, 1], ["0%", "28%"]);
@@ -110,8 +111,9 @@ export default function CSRClient() {
 
       {/* ══════════════════════════ HERO ════════════════════════════════════ */}
       <section
+        id="hero"
         ref={heroRef}
-        className="relative min-h-screen flex items-center overflow-hidden pt-6 pb-16 sm:pt-8 sm:pb-20"
+        className="relative min-h-screen flex items-center overflow-hidden pt-28 pb-16 sm:pt-32 sm:pb-20"
         style={{ background: `linear-gradient(165deg, #061506 0%, ${G.dark} 40%, ${G.deep} 80%, #153615 100%)` }}
       >
         {/* Parallax background */}
@@ -274,12 +276,11 @@ export default function CSRClient() {
                   className="absolute -bottom-6 left-4 sm:-left-6 bg-white rounded-2xl p-5 border border-stone-100 flex flex-col items-center z-20"
                   style={{ boxShadow: "0 20px 40px rgba(0,0,0,0.13)" }}
                 >
-                  <Image
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
                     src="/IShara-Foundation-logo-2.jpeg"
                     alt="IShara Foundation Logo"
-                    width={140}
-                    height={44}
-                    className="object-contain"
+                    style={{ width: "140px", height: "auto", display: "block", objectFit: "contain" }}
                   />
                   <div className="flex items-center gap-1.5 mt-3">
                     <span className="w-1.5 h-1.5 rounded-full" style={{ background: G.fresh }} />
@@ -499,12 +500,11 @@ export default function CSRClient() {
                     className="inline-flex items-center justify-center mb-8 rounded-2xl px-6 py-4"
                     style={{ background: "rgba(255,255,255,0.95)", boxShadow: "0 4px 24px rgba(0,0,0,0.12)" }}
                   >
-                    <Image
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
                       src="/IShara-Foundation-logo-2.jpeg"
                       alt="IShara Foundation"
-                      width={200}
-                      height={65}
-                      className="object-contain"
+                      style={{ width: "200px", height: "auto", display: "block", objectFit: "contain" }}
                     />
                   </div>
 
@@ -847,35 +847,46 @@ export default function CSRClient() {
                 { label: "Delivery Excellence", icon: "🎯", active: false, desc: "Uncompromising quality in every deliverable" },
                 { label: "Client Partnership",  icon: "🤝", active: false, desc: "Long-term relationships built on trust" },
                 { label: "Social Impact",       icon: "🌱", active: true,  desc: "Technology for meaningful social change" },
-              ].map((val, i) => (
-                <motion.div
-                  key={i}
-                  variants={fadeUp}
-                  whileHover={{ y: -6, transition: { duration: 0.22 } }}
-                  className="rounded-2xl p-7 text-center transition-all duration-300"
-                  style={{
-                    background: val.active ? `linear-gradient(145deg, ${G.deep}, ${G.dark})` : G.cream,
-                    border: `2px solid ${val.active ? G.mid : G.pale}`,
-                    boxShadow: val.active ? `0 16px 44px rgba(45,90,39,0.32)` : "none",
-                  }}
-                >
-                  <span className="text-4xl block mb-4">{val.icon}</span>
-                  <p className="text-sm font-black mb-2" style={{ color: val.active ? "#fff" : G.dark }}>
-                    {val.label}
-                  </p>
-                  <p className="text-xs leading-relaxed" style={{ color: val.active ? "rgba(255,255,255,0.60)" : "#9CA3AF" }}>
-                    {val.desc}
-                  </p>
-                  {val.active && (
-                    <span
-                      className="inline-block mt-3 text-[10px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider"
-                      style={{ background: "rgba(125,196,110,0.25)", color: G.light }}
-                    >
-                      CSR Focus
-                    </span>
-                  )}
-                </motion.div>
-              ))}
+              ].map((val, i) => {
+                const isHovered = hoveredValue === i;
+                return (
+                  <motion.div
+                    key={i}
+                    variants={fadeUp}
+                    whileHover={{ y: -6, transition: { duration: 0.22 } }}
+                    onMouseEnter={() => setHoveredValue(i)}
+                    onMouseLeave={() => setHoveredValue(null)}
+                    className="rounded-2xl p-7 text-center transition-all duration-300 cursor-default"
+                    style={{
+                      background: isHovered
+                        ? `linear-gradient(145deg, ${G.deep}, ${G.dark})`
+                        : G.cream,
+                      border: `2px solid ${isHovered ? G.mid : (val.active ? G.light : G.pale)}`,
+                      boxShadow: isHovered ? `0 16px 44px rgba(45,90,39,0.32)` : "none",
+                    }}
+                  >
+                    <span className="text-4xl block mb-4">{val.icon}</span>
+                    <p className="text-sm font-black mb-2" style={{ color: isHovered ? "#fff" : G.dark, transition: "color 0.3s" }}>
+                      {val.label}
+                    </p>
+                    <p className="text-xs leading-relaxed" style={{ color: isHovered ? "rgba(255,255,255,0.70)" : "#6B7280", transition: "color 0.3s" }}>
+                      {val.desc}
+                    </p>
+                    {val.active && (
+                      <span
+                        className="inline-block mt-3 text-[10px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider"
+                        style={{
+                          background: isHovered ? "rgba(125,196,110,0.25)" : "rgba(45,90,39,0.15)",
+                          color: isHovered ? G.light : G.deep,
+                          transition: "all 0.3s"
+                        }}
+                      >
+                        CSR Focus
+                      </span>
+                    )}
+                  </motion.div>
+                );
+              })}
             </motion.div>
           </motion.div>
         </div>
@@ -955,19 +966,31 @@ export default function CSRClient() {
         className="py-28 relative overflow-hidden"
         style={{ background: `linear-gradient(160deg, ${G.dark} 0%, #0B1E0B 50%, ${G.deep} 100%)` }}
       >
+        {/* Background Image — desktop/tablet only, hidden on mobile */}
+        <div className="absolute inset-0 z-0 hidden md:block">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/IShara-Foundation/CSR-Initiative/bg-image.webp"
+            alt="CSR Initiative Background"
+            className="w-full h-full object-cover"
+          />
+          {/* overlay to keep text readable */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-[#0A1F0A]/75 to-black/90" />
+        </div>
+
         <div
-          className="absolute inset-0 pointer-events-none opacity-[0.04]"
+          className="absolute inset-0 pointer-events-none opacity-[0.04] z-10"
           style={{
             backgroundImage: `linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)`,
             backgroundSize: "28px 28px",
           }}
         />
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[400px] rounded-full pointer-events-none"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[400px] rounded-full pointer-events-none z-10"
           style={{ background: `rgba(78,153,68,0.16)`, filter: "blur(130px)" }}
         />
 
-        <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
+        <div className="max-w-4xl mx-auto px-4 text-center relative z-20">
           {/* Logo card */}
           <motion.div
             initial={{ opacity: 0, scale: 0.88 }}
@@ -980,12 +1003,11 @@ export default function CSRClient() {
               className="inline-flex items-center justify-center rounded-2xl px-8 py-5"
               style={{ background: "rgba(255,255,255,0.93)", boxShadow: `0 12px 50px rgba(0,0,0,0.35)` }}
             >
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src="/IShara-Foundation-logo-2.jpeg"
                 alt="IShara Foundation"
-                width={240}
-                height={75}
-                className="object-contain"
+                style={{ width: "240px", height: "auto", display: "block", objectFit: "contain" }}
               />
             </div>
           </motion.div>
@@ -1068,12 +1090,11 @@ export default function CSRClient() {
               className="flex items-center justify-center rounded-lg px-2 py-1"
               style={{ background: "rgba(255,255,255,0.92)" }}
             >
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src="/IShara-Foundation-logo-2.jpeg"
                 alt="IShara Foundation"
-                width={110}
-                height={36}
-                className="object-contain"
+                style={{ width: "110px", height: "auto", display: "block", objectFit: "contain" }}
               />
             </div>
             <span className="text-xs font-semibold" style={{ color: "rgba(255,255,255,0.30)" }}>× NexeraTech Solutions</span>
